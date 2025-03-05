@@ -7,6 +7,7 @@
 
 
 import SwiftUI
+import UI
 
 public struct CredentialsView: View {
     @ObservedObject var viewModel: RegisterViewModel
@@ -15,21 +16,21 @@ public struct CredentialsView: View {
             VStack {
                 Spacer()
                 
-                CustomTextField(
+                CustomAuthTextField(
                     text : $viewModel.email,
                     label: "Email"
                 ).padding(.bottom, 24)
                 
-                CustomTextField(text : $viewModel.password, label: "Mot de passe", isSecureField: true).padding(.bottom, 24)
+                CustomAuthTextField(text : $viewModel.password, label: "Mot de passe", isSecureField: true).padding(.bottom, 24)
                 
-                CustomTextField(text : $viewModel.confirmPassword, label: "Confirmer le mot de passe", isSecureField: true)
+                CustomAuthTextField(text : $viewModel.confirmPassword, label: "Confirmer le mot de passe", isSecureField: true)
                 
                 Spacer()
                 
                 if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage).foregroundColor(.red)
                 }
-                AuthButton(title: "Suivant") {
+                ButtonComponent(title: "Suivant") {
                     viewModel.validateCredentials()
                     if (viewModel.isCredentialsValid){
                         viewModel.nextStep()

@@ -21,13 +21,15 @@ let package = Package(
             name: "Core",
             dependencies: [
                 .target(name: "Map"),
-                .target(name: "Auth")
+                .target(name: "Auth"),
+                .target(name: "Profile"),
             ],
             path: "Sources/Core"),
         .target(
             name: "Map",
             dependencies:[
-                .target(name: "SearchBar")
+                .target(name: "SearchBar"),
+                .target(name: "Profile"),
             ],
             path: "Sources/Map"),
         .target(
@@ -39,7 +41,8 @@ let package = Package(
             dependencies: [
                 .target(name: "Tools"),
                 .target(name: "Map"),
-                .target(name: "Models")
+                .target(name: "Models"),
+                .target(name: "UI")
             ],
             path: "Sources/Auth"),
         .target(
@@ -52,6 +55,17 @@ let package = Package(
             name: "Models",
             dependencies: [],
             path: "Sources/Models"),
-
+        .target(
+            name: "UI",
+            dependencies: [],
+            path: "Sources/UI"),
+        .target(
+            name: "Profile",
+            dependencies: [
+                .target(name: "Models"),
+                .target(name: "UI"),
+                .target(name: "Tools")
+            ],
+            path: "Sources/Profile"),
     ]
 )

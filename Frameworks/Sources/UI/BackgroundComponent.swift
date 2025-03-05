@@ -1,14 +1,14 @@
 //
-//  AuthBackgroundView.swift
+//  BackgroundComponent.swift
 //  Frameworks
 //
-//  Created by Marie Lise Renzema on 12/02/2025.
+//  Created by Marie Lise Renzema on 05/03/2025.
 //
 
 
 import SwiftUI
 
-public struct AuthBackgroundView: View {
+public struct BackgroundComponent: View {
     public init() {}
 
     public var body: some View {
@@ -25,5 +25,6 @@ public struct AuthBackgroundView: View {
 
 // MARK: - Preview
 #Preview {
-    AuthBackgroundView()
+    BackgroundComponent()
 }
+

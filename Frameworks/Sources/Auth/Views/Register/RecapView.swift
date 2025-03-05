@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UI
 
 public struct RecapView: View {
     @ObservedObject var viewModel: RegisterViewModel
@@ -19,13 +20,15 @@ public struct RecapView: View {
                 .foregroundColor(Color("DarkBlue", bundle: .main))
                 .padding(.bottom, 54)
             
-            CustomTextDisplay(label: "Nom Prénom", text: viewModel.lastName + " " + viewModel.firstName)
-            CustomTextDisplay(label: "Handicap", text: viewModel.disability.rawValue)
-            CustomTextDisplay(label: "Email", text: viewModel.email)
+            TextDisplayComponent(label: "Nom", text: viewModel.lastName)
+            TextDisplayComponent(label: "Prénom", text: viewModel.firstName)
+            TextDisplayComponent(label: "Email", text: viewModel.email)
+            TextDisplayComponent(label: "Handicap", text: viewModel.disability.rawValue)
+       
             
             Spacer()
             
-            AuthButton(title: "S'inscrire") {
+            ButtonComponent(title: "S'inscrire") {
                 viewModel.register()
             }
         }

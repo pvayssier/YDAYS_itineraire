@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UI
 
 
 public struct AuthSelectionView: View {
@@ -16,10 +17,10 @@ public struct AuthSelectionView: View {
        public var body: some View {
            NavigationStack {
                ZStack {
-                   AuthBackgroundView()
+                   BackgroundComponent()
                    
                    VStack(spacing: 40) {
-                       AuthButton(title: "Se connecter") {
+                       ButtonComponent(title: "Se connecter") {
                            viewModel.handleAuthDestination(destination: .login)
                        }
                        
@@ -28,7 +29,7 @@ public struct AuthSelectionView: View {
                            .background(Color("DarkBlue", bundle: .main))
                            .padding(.horizontal, 40)
                        
-                       AuthButton(title: "S'inscrire") {
+                       ButtonComponent(title: "S'inscrire") {
                            viewModel.handleAuthDestination(destination: .register)
                        }
                        

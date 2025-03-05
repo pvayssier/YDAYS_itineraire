@@ -1,15 +1,20 @@
 //
-//  AuthButton.swift
+//  ButtonComponent.swift
 //  Frameworks
 //
-//  Created by Marie Lise Renzema on 12/02/2025.
+//  Created by Marie Lise Renzema on 05/03/2025.
 //
 
 import SwiftUI
 
-public struct AuthButton: View {
+public struct ButtonComponent: View {
     var title: String
     var action: () -> Void
+    
+    public init(title: String, action: @escaping () -> Void) {
+        self.title = title
+        self.action = action
+    }
 
     public var body: some View {
         Button(action: action) {
@@ -18,14 +23,16 @@ public struct AuthButton: View {
                 .foregroundColor(.white)
                 .padding()
                 .frame(maxWidth: 233, maxHeight: 47)
-                .background(Color("DarkBlue", bundle: .main))
+                .background(Color("Beige", bundle: .main))
                 .cornerRadius(30)
         }
     }
 }
 
 #Preview {
-    AuthButton(title: "Se connecter") {
+    ButtonComponent(title: "Se connecter") {
         print("Bouton cliqué !")
     }
 }
+
+

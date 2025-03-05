@@ -1,20 +1,26 @@
 //
-//  CustomTextDisplay.swift
+//  TextDisplayComponent.swift
 //  Frameworks
 //
-//  Created by Marie Lise Renzema on 12/02/2025.
+//  Created by Marie Lise Renzema on 05/03/2025.
 //
 
 import SwiftUI
 
-public struct CustomTextDisplay: View {
-    
+public struct TextDisplayComponent: View {
     var label: String
     var text: String
+    
+    public init(label: String, text: String) {
+        self.label = label
+        self.text = text
+    }
 
     public var body: some View {
         VStack (alignment: HorizontalAlignment.leading, spacing: 6){
             Text(label)
+                .font(.headline)
+                .foregroundColor(.gray)
 
             Text(text)
                 .padding()
@@ -29,9 +35,5 @@ public struct CustomTextDisplay: View {
 }
 
 #Preview {
-    CustomTextDisplay(label: "Nom Prénom", text: "John Doe")
+    TextDisplayComponent(label: "Nom Prénom", text: "John Doe")
 }
-
-
-
-

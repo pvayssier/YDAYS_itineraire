@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UI
 
 public struct PersonalInfoView: View {
     @ObservedObject var viewModel: RegisterViewModel
@@ -14,16 +15,16 @@ public struct PersonalInfoView: View {
         VStack {
             Spacer()
             
-            CustomTextField(
+            CustomAuthTextField(
                 text : $viewModel.lastName,
                 label: "Nom"
             ).padding(.bottom, 24)
             
-            CustomTextField(text : $viewModel.firstName, label: "Prénom")
+            CustomAuthTextField(text : $viewModel.firstName, label: "Prénom")
             
             Spacer()
             
-            AuthButton(title: "Suivant") {
+            ButtonComponent(title: "Suivant") {
                 viewModel.nextStep()
             }
         }

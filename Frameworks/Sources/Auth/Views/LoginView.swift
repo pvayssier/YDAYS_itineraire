@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Map
+import UI
 
 public struct LoginView: View {
     @StateObject private var viewModel = LoginViewModel()
@@ -16,20 +17,20 @@ public struct LoginView: View {
     public var body: some View {
         NavigationStack() {
             ZStack {
-                AuthBackgroundView()
+                BackgroundComponent()
                 
                 VStack {
                     Spacer()
                     
-                    CustomTextField(text: $viewModel.email, label: "Email").padding(.bottom, 24)
-                    CustomTextField(text: $viewModel.password, label : "Mot de passe", isSecureField: true)
+                    CustomAuthTextField(text: $viewModel.email, label: "Email").padding(.bottom, 24)
+                    CustomAuthTextField(text: $viewModel.password, label : "Mot de passe", isSecureField: true)
                     
                     Spacer()
                     
                     if let errorMessage = viewModel.errorMessage {
                         Text(errorMessage).foregroundColor(.red)
                     }
-                    AuthButton(title: "Se connecter") {
+                    ButtonComponent(title: "Se connecter") {
                         viewModel.login()
                     }
                 }

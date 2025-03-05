@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Map
+import UI
 
 public struct RegisterView: View {
     @StateObject private var viewModel = RegisterViewModel()
@@ -16,7 +17,7 @@ public struct RegisterView: View {
     public var body: some View {
         NavigationStack {
             ZStack {
-                AuthBackgroundView()
+                BackgroundComponent()
                 
                 VStack {
                     switch viewModel.currentStep {

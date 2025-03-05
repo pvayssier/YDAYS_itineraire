@@ -8,6 +8,7 @@
 import SwiftUI
 import Models
 import Tools
+import UI
 
 public struct DisabilitySelectionView: View {
     @ObservedObject var viewModel: RegisterViewModel
@@ -37,7 +38,7 @@ public struct DisabilitySelectionView: View {
             
             Spacer()
 
-            AuthButton(title: "Suivant") {
+            ButtonComponent(title: "Suivant") {
                 viewModel.nextStep()
             }
         }

@@ -5,8 +5,6 @@
 //  Created by Marie Lise Renzema on 12/02/2025.
 //
 
-import Foundation
-
 public enum Disability: String, CaseIterable {
     case motor = "Handicap Moteur"
     case visual = "Malvoyant"

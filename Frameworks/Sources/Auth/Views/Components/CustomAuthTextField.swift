@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct CustomTextField: View {
+public struct CustomAuthTextField: View {
     @Binding var text: String
     var label: String
     var isSecureField: Bool = false
@@ -60,6 +60,6 @@ public struct CustomTextField: View {
 }
 
 #Preview {
-    CustomTextField(text: .constant("example@example.com"), label: "Email", isSecureField: false)
+    CustomAuthTextField(text: .constant("example@example.com"), label: "Email", isSecureField: false)
 }
 
