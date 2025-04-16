@@ -1,6 +1,62 @@
-import SwiftUI
+//
+//  ItinerarySheetView.swift
+//  Frameworks
+//
+//  Created by William Fort on 12/02/2025.
+//
 
-public struct ItinerarySheetView: View {
+import Combine
+import SwiftUI
+import Tools
+
+public protocol ItinerarySheetViewModelProtocol: ObservableObject {
+    var sheetState: DraggableSheetViewModel.SheetState { get }
+    var publishedSheetState: Published<DraggableSheetViewModel.SheetState> { get }
+
+    func updateSheetState(to state: DraggableSheetViewModel.SheetState)
+
+    var publishedIsHeightLocked: Published<Bool> { get }
+
+    func updateIsHeightLocked(to value: Bool)
+}
+
+public final class ItinerarySheetViewModel: ItinerarySheetViewModelProtocol, ObservableObject {
+    @Published public private(set) var sheetState: DraggableSheetViewModel.SheetState = .minimized
+    @Published private var isHeightLocked: Bool = false
+
+    private var anyCancellable = Set<AnyCancellable>()
+    public init() {
+        $sheetState.sink { state in
+            print(state)
+        }
+        .store(in: &anyCancellable)
+
+        $isHeightLocked.sink { value in
+            print(value)
+        }
+        .store(in: &anyCancellable)
+    }
+
+    public var publishedSheetState: Published<DraggableSheetViewModel.SheetState> {
+        _sheetState
+    }
+
+    public func updateSheetState(to state: DraggableSheetViewModel.SheetState) {
+        sheetState = state
+    }
+
+    public var publishedIsHeightLocked: Published<Bool> {
+        _isHeightLocked
+    }
+
+    public func updateIsHeightLocked(to value: Bool) {
+        isHeightLocked = value
+    }
+}
+
+public struct ItinerarySheetView<ViewModel: ItinerarySheetViewModelProtocol>: View {
+    @ObservedObject private var viewModel: ViewModel
+
     @State private var isSheetPresented: Bool = true
     @State private var departure: String = ""
     @State private var arrival: String = ""
@@ -12,7 +68,9 @@ public struct ItinerarySheetView: View {
         !departure.isEmpty && !arrival.isEmpty
     }
 
-    public init() {}
+    public init(viewModel: ViewModel) {
+        self.viewModel = viewModel
+    }
 
     public var body: some View {
         VStack {
@@ -35,65 +93,16 @@ public struct ItinerarySheetView: View {
                 .padding([.top, .trailing], 20)
             }
         }
-        .sheet(isPresented: $isSheetPresented) {
+        .draggableSheet(isPresented: $isSheetPresented,
+                        state: viewModel.publishedSheetState,
+                        isHeightLocked: viewModel.publishedIsHeightLocked) {
             ZStack {
                 VStack(spacing: 20) {
                     // Section des boutons "Home", "Travail", "Autre"
-                    HStack(spacing: 20) {
-                        Button("HOME") {}
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color("ContainersColor"))
-                            .foregroundColor(Color("TextsColor"))
-                            .cornerRadius(30)
-
-                        Button("TRAVAIL") {}
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color("ContainersColor"))
-                            .foregroundColor(Color("TextsColor"))
-                            .cornerRadius(30)
-
-                        Button("AUTRE") {}
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color("ContainersColor"))
-                            .foregroundColor(Color("TextsColor"))
-                            .cornerRadius(30)
-                    }
-
+                    FavoriesStack()
                     // Inputs "Départ" et "Arrivée" avec bouton d'inversion
-                    ZStack {
-                        VStack(spacing: 15) {
-                            TextField("Départ", text: $departure)
-                                .padding()
-                                .background(Color("InputsColor"))
-                                .cornerRadius(20)
-
-                            TextField("Arrivée", text: $arrival)
-                                .padding()
-                                .background(Color("InputsColor"))
-                                .cornerRadius(20)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 20)
-
-                        Button(action: {
-                            swap(&departure, &arrival)
-                        }) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color("GotoColor"))
-                                    .frame(width: 44, height: 44)
-                                Image("reverse")
-                                    .resizable()
-                                    .frame(width: 16, height: 28)
-                            }
-                        }
-                        .offset(x: 140)
-                        .buttonStyle(PlainButtonStyle())
-                    }
-
+                    TripAddressFieldsView(departure: $departure,
+                                          arrival: $arrival)
                     // Affichage du bloc trajet après soumission
                     if showRouteBlock {
                         HStack(spacing: 15) {
@@ -130,7 +139,8 @@ public struct ItinerarySheetView: View {
                     Button(action: {
                         withAnimation {
                             showRouteBlock = true  // Afficher le bloc trajet
-                            sheetDetent = .fraction(0.7) // Agrandir le bottom sheet
+                            viewModel.updateIsHeightLocked(to: true)
+                            viewModel.updateSheetState(to: .fullScreen)
                         }
                     }) {
                         Text("ALLONS-Y")
@@ -146,15 +156,11 @@ public struct ItinerarySheetView: View {
                 }
             }
             .padding()
-            .presentationDetents([.fraction(0.1), .fraction(0.5), .fraction(0.7)], selection: $sheetDetent)
             .presentationDragIndicator(.visible)
-            .onDisappear {
-                isSheetPresented = true
-            }
         }
     }
 }
 
 #Preview {
-    ItinerarySheetView()
+    ItinerarySheetView(viewModel: ItinerarySheetViewModel())
 }

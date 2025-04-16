@@ -1,3 +1,10 @@
+//
+//  LayoutView.swift
+//  Frameworks
+//
+//  Created by William Fort on 12/02/2025.
+//
+
 import SwiftUI
 
 public struct LayoutView: View {
@@ -19,7 +26,7 @@ public struct LayoutView: View {
             Button(action: {
                 print("Ears tapped")
             }) {
-                Image("ear", bundle: .main)
+                Image("ears", bundle: .main)
                     .resizable()
                     .frame(width: 28, height: 46)
                     .foregroundColor(.white)

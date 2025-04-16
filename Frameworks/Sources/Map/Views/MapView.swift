@@ -68,7 +68,7 @@ public struct MapView: View {
               .edgesIgnoringSafeArea(.all)
               LayoutView()
                   .safeAreaPadding(.top)
-              ItinerarySheetView()
+              ItinerarySheetView(viewModel: ItinerarySheetViewModel())
           }
           .onAppear {
               fetchRoute()

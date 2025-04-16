@@ -25,7 +25,13 @@ let package = Package(
             path: "Sources/Core"),
         .target(
             name: "Map",
-            dependencies:[],
+            dependencies:[
+                .target(name: "Tools")
+            ],
             path: "Sources/Map"),
+        .target(
+            name: "Tools",
+            dependencies:[],
+            path: "Sources/Tools")
     ]
 )
