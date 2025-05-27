@@ -9,67 +9,46 @@ import Combine
 import SwiftUI
 import Tools
 
-public protocol ItinerarySheetViewModelProtocol: ObservableObject {
-    var sheetState: DraggableSheetViewModel.SheetState { get }
-    var publishedSheetState: Published<DraggableSheetViewModel.SheetState> { get }
+@propertyWrapper
+public class BindableBis<Value> {
+    @Published private var value: Value
 
-    func updateSheetState(to state: DraggableSheetViewModel.SheetState)
-
-    var publishedIsHeightLocked: Published<Bool> { get }
-
-    func updateIsHeightLocked(to value: Bool)
-}
-
-public final class ItinerarySheetViewModel: ItinerarySheetViewModelProtocol, ObservableObject {
-    @Published public private(set) var sheetState: DraggableSheetViewModel.SheetState = .minimized
-    @Published private var isHeightLocked: Bool = false
-
-    private var anyCancellable = Set<AnyCancellable>()
-    public init() {
-        $sheetState.sink { state in
-            print(state)
-        }
-        .store(in: &anyCancellable)
-
-        $isHeightLocked.sink { value in
-            print(value)
-        }
-        .store(in: &anyCancellable)
+    public var wrappedValue: Value {
+        get { value }
+        set { value = newValue }
     }
 
-    public var publishedSheetState: Published<DraggableSheetViewModel.SheetState> {
-        _sheetState
+    public var projectedValue: Published<Value>.Publisher {
+        $value
     }
 
-    public func updateSheetState(to state: DraggableSheetViewModel.SheetState) {
-        sheetState = state
+    public var publisher: Published<Value> { _value }
+
+    public init(wrappedValue: Value) {
+        self.value = wrappedValue
     }
 
-    public var publishedIsHeightLocked: Published<Bool> {
-        _isHeightLocked
-    }
-
-    public func updateIsHeightLocked(to value: Bool) {
-        isHeightLocked = value
+    public func update(to newValue: Value) {
+        self.value = newValue
     }
 }
 
-public struct ItinerarySheetView<ViewModel: ItinerarySheetViewModelProtocol>: View {
-    @ObservedObject private var viewModel: ViewModel
+
+public struct ItinerarySheetView: View {
+
+    @BindableBis private var isHeightLocked: Bool = false
+    @BindableBis private var sheetState: DraggableSheetViewModel.SheetState = .minimized
 
     @State private var isSheetPresented: Bool = true
     @State private var departure: String = ""
     @State private var arrival: String = ""
     @State private var showRouteBlock: Bool = false // Gère l'affichage du bloc trajet
     @State private var sheetDetent: PresentationDetent = .fraction(0.5) // Taille du Bottom Sheet
+    @State private var isTripAddressFieldsFocused: Bool = false
 
     // Vérifie si les deux champs sont remplis
     private var isFormValid: Bool {
         !departure.isEmpty && !arrival.isEmpty
-    }
-
-    public init(viewModel: ViewModel) {
-        self.viewModel = viewModel
     }
 
     public var body: some View {
@@ -90,19 +69,26 @@ public struct ItinerarySheetView<ViewModel: ItinerarySheetViewModelProtocol>: Vi
                         .background(Circle().fill(Color.white))
                         .shadow(radius: 10)
                 }
-                .padding([.top, .trailing], 20)
+                .padding(.bottom, 160)
+                .padding(.trailing, 20)
             }
         }
         .draggableSheet(isPresented: $isSheetPresented,
-                        state: viewModel.publishedSheetState,
-                        isHeightLocked: viewModel.publishedIsHeightLocked) {
-            ZStack {
-                VStack(spacing: 20) {
+                        state: _sheetState.publisher,
+                        isHeightLocked: _isHeightLocked.publisher) {
+                VStack() {
                     // Section des boutons "Home", "Travail", "Autre"
                     FavoriesStack()
                     // Inputs "Départ" et "Arrivée" avec bouton d'inversion
                     TripAddressFieldsView(departure: $departure,
-                                          arrival: $arrival)
+                                          arrival: $arrival,
+                                          isFocused: $isTripAddressFieldsFocused)
+                    .onChange(of: isTripAddressFieldsFocused) { oldValue, newValue in
+                        if oldValue != newValue && newValue {
+                            _sheetState.update(to: .custom(600))
+                        }
+                        _isHeightLocked.update(to: newValue)
+                    }
                     // Affichage du bloc trajet après soumission
                     if showRouteBlock {
                         HStack(spacing: 15) {
@@ -139,8 +125,7 @@ public struct ItinerarySheetView<ViewModel: ItinerarySheetViewModelProtocol>: Vi
                     Button(action: {
                         withAnimation {
                             showRouteBlock = true  // Afficher le bloc trajet
-                            viewModel.updateIsHeightLocked(to: true)
-                            viewModel.updateSheetState(to: .fullScreen)
+                            _sheetState.update(to: .fullScreen)
                         }
                     }) {
                         Text("ALLONS-Y")
@@ -154,7 +139,6 @@ public struct ItinerarySheetView<ViewModel: ItinerarySheetViewModelProtocol>: Vi
                     }
                     .disabled(!isFormValid)
                 }
-            }
             .padding()
             .presentationDragIndicator(.visible)
         }
@@ -162,5 +146,5 @@ public struct ItinerarySheetView<ViewModel: ItinerarySheetViewModelProtocol>: Vi
 }
 
 #Preview {
-    ItinerarySheetView(viewModel: ItinerarySheetViewModel())
+    ItinerarySheetView()
 }

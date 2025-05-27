@@ -7,32 +7,44 @@
 
 import SwiftUI
 
-// copilot me to find a name for this view
+enum TripAddressFieldsViewFocus: Hashable {
+    case departure
+    case arrival
+}
 
 struct TripAddressFieldsView: View {
     @Binding private var departure: String
     @Binding private var arrival: String
+    @Binding private var isFocused: Bool
+    @FocusState private var focusedField: TripAddressFieldsViewFocus?
 
-    init(departure: Binding<String>, arrival: Binding<String>) {
+
+    init(departure: Binding<String>, arrival: Binding<String>, isFocused: Binding<Bool>) {
         self._departure = departure
         self._arrival = arrival
+        self._isFocused = isFocused
     }
 
     var body: some View {
         ZStack {
             VStack(spacing: 15) {
                 TextField("Départ", text: $departure)
+                    .focused($focusedField, equals: .departure)
                     .padding()
                     .background(Color("InputsColor"))
                     .cornerRadius(20)
 
                 TextField("Arrivée", text: $arrival)
+                    .focused($focusedField, equals: .arrival)
                     .padding()
                     .background(Color("InputsColor"))
                     .cornerRadius(20)
             }
             .frame(maxWidth: .infinity)
             .padding(.top, 20)
+            .onChange(of: focusedField) { oldValue, newValue in
+                isFocused = newValue != nil
+            }
 
             Button(action: {
                 if departure.isEmpty && arrival.isEmpty {

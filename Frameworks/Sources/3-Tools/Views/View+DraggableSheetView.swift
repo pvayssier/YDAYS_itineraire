@@ -13,7 +13,7 @@ extension View {
         isPresented: Binding<Bool>,
         state: Published<DraggableSheetViewModel.SheetState>,
         isHeightLocked: Published<Bool> = .init(initialValue: false),
-        minHeight: CGFloat = 180,
+        minHeight: CGFloat = 200,
         midHeight: CGFloat = 400,
         maxHeight: CGFloat = UIScreen.main.bounds.height * 0.95,
         @ViewBuilder content: @escaping () -> Content
@@ -43,6 +43,7 @@ public final class DraggableSheetViewModel: ObservableObject {
         case minimized
         case halfScreen
         case fullScreen
+        case custom(CGFloat)
     }
 
     @Published var state: SheetState
@@ -77,6 +78,8 @@ public final class DraggableSheetViewModel: ObservableObject {
                 self?.sheetHeight = midHeight
             case .fullScreen:
                 self?.sheetHeight = maxHeight
+            case .custom(let height):
+                self?.sheetHeight = height
             }
         }
         .store(in: &cancellables)
